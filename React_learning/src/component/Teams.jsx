@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
+import { faMicrophone, faMicrophoneSlash} from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons'
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons'; 
+import { FavoritesContext } from './Fav';
 
 const users = [
     { name: 'Shawal Ali', avatar: 'https://media.istockphoto.com/id/1485546774/photo/bald-man-smiling-at-camera-standing-with-arms-crossed.jpg?s=1024x1024&w=is&k=20&c=zvw6qDmYHmIvvCbEn2ZUF0tdSbKPnEWRsVAzd9g4hCM=' },
@@ -13,24 +16,28 @@ const users = [
 ];
 
 const Teams = () => {
-    // Initialize mic states with the user's name as the key
+    const { favorites, toggleFavorite } = useContext(FavoritesContext);
+
     const [micStates, setMicStates] = useState(users.reduce((acc, user) => {
-        acc[user.name] = false; // Default mic state is off
+        acc[user.name] = false;
         return acc;
     }, {}));
 
     const toggleMic = (userName) => {
         setMicStates(prevState => ({
             ...prevState,
-            [userName]: !prevState[userName] // Toggle mic state for the specific user
+            [userName]: !prevState[userName]
         }));
-    }
+    };
 
     return (
         <div className="Meet">
             {users.map(user => (
                 <div className="container" key={user.name}>
                     <div className='sound'>
+                        <div onClick={() => toggleFavorite(user.name)}>
+                            <FontAwesomeIcon icon={favorites[user.name] ? faStarSolid : faStarRegular} />
+                        </div>
                         <div className='sound-icon' onClick={() => toggleMic(user.name)}>
                             <FontAwesomeIcon className='icon' icon={micStates[user.name] ? faMicrophone : faMicrophoneSlash} />
                         </div>
