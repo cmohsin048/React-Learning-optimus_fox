@@ -1,31 +1,32 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { FavoritesContext } from './Fav';
 
-const users = [
-    { name: 'Shawal Ali', avatar: 'https://media.istockphoto.com/id/1485546774/photo/bald-man-smiling-at-camera-standing-with-arms-crossed.jpg?s=1024x1024&w=is&k=20&c=zvw6qDmYHmIvvCbEn2ZUF0tdSbKPnEWRsVAzd9g4hCM=' },
-    { name: 'Muhammad Ahmed Hussain', avatar: '' },
-    { name: 'Faiz Ul Hassan', avatar: 'https://plus.unsplash.com/premium_photo-1674777843203-da3ebb9fbca0?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-    { name: 'Arisha Nawaz', avatar: '' },
-    { name: 'Mariyem Ahmed', avatar: '' },
-    { name: 'Iram Khizar', avatar: '' },
-    { name: 'Ch Mohsin', avatar: '' }
-];
-
 const FavoritesList = () => {
     const { favorites, toggleFavorite } = useContext(FavoritesContext);
-    const [micStates, setMicStates] = useState(users.reduce((acc, user) => {
-        acc[user.name] = false;
-        return acc;
-    }, {}));
+    const [users, setUsers] = useState([]);
+    const [micStates, setMicStates] = useState({});
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/users')
+            .then(response => {
+                setUsers(response.data);
+                setMicStates(response.data.reduce((acc, user) => {
+                    acc[user.name] = false;
+                    return acc;
+                }, {}));
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+            });
+    }, []);
 
     const handleResetFavorites = () => {
-        // Clear favorites in context
         toggleFavorite(null);
-        // Clear favorites in localStorage
         localStorage.removeItem('favorites');
     };
 
@@ -66,6 +67,7 @@ const FavoritesList = () => {
                         </div>
                     </div>
                 ))}
+            <button onClick={handleResetFavorites}>Reset Favorites</button>
         </div>
     );
 };
