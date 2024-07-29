@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import Loader from './Loader'; // Import the Loader component
 
 function Copyright(props) {
   return (
@@ -41,6 +42,7 @@ export default function SignInSide() {
   });
 
   const [errors, setErrors] = React.useState({});
+  const [loading, setLoading] = React.useState(false); // Add loading state
 
   const navigate = useNavigate();
 
@@ -63,23 +65,33 @@ export default function SignInSide() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setLoading(true); // Show loader on form submission
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setLoading(false); // Hide loader if there are validation errors
     } else {
-      alert(JSON.stringify(formData, null, 2));
-      setErrors({});
-      setFormData({
-        name: '',
-        email: '',
-        dob: '',
-        role: '',
-        password: '',
-        confirmPassword: '',
-      });
-      navigate('/');
+      setTimeout(() => {
+        alert(JSON.stringify(formData, null, 2));
+        setErrors({});
+        setFormData({
+          name: '',
+          email: '',
+          dob: '',
+          role: '',
+          password: '',
+          confirmPassword: '',
+        });
+        setLoading(false); // Hide loader after form is submitted
+        navigate('/');
+      }, 2000); // Simulate network delay
     }
   };
+
+  if (loading) {
+    return <Loader />; // Show loader while loading
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>

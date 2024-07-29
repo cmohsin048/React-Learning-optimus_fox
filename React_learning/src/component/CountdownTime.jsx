@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Loader from './Loader';
 
 const CountdownTimer = () => {
   const [endDate, setEndDate] = useState('2024-12-31T00:00:00');
   const [inputDate, setInputDate] = useState('2024-12-31T00:00:00');
   const [timeLeft, setTimeLeft] = useState({});
   const [isActive, setIsActive] = useState(true);
+  const [loading, setLoading] = useState(true);
   const timerRef = useRef(null);
 
   const handleChange = (e) => {
@@ -13,7 +15,7 @@ const CountdownTimer = () => {
 
   const handleSetDate = () => {
     setEndDate(inputDate);
-    setIsActive(true)
+    setIsActive(true);
   };
 
   const calculateTimeLeft = () => {
@@ -41,7 +43,8 @@ const CountdownTimer = () => {
 
   useEffect(() => {
     if (isActive) {
-      timerRef.current = setInterval(updateTimer, 1000);
+      setLoading(false); 
+      timerRef.current = setInterval(updateTimer, 11111000);
     } else {
       clearInterval(timerRef.current);
     }
@@ -51,7 +54,7 @@ const CountdownTimer = () => {
 
   const resetTimer = () => {
     setIsActive(false);
-    setEndDate(new Date().toISOString()); // Setting to current time for reset effect
+    setEndDate(new Date().toISOString()); 
     setTimeLeft({
       days: 0,
       hours: 0,
@@ -74,7 +77,11 @@ const CountdownTimer = () => {
       </div>
     );
   });
-  
+
+  if (loading) {
+    return <Loader />; 
+  }
+
   return (
     <div className="countdown">
       <div className="input-container">

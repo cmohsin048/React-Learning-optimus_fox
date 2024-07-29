@@ -5,11 +5,13 @@ import { faMicrophone, faMicrophoneSlash } from '@fortawesome/free-solid-svg-ico
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { FavoritesContext } from './Fav';
+import Loader from './Loader';
 
 const FavoritesList = () => {
     const { favorites, toggleFavorite } = useContext(FavoritesContext);
     const [users, setUsers] = useState([]);
     const [micStates, setMicStates] = useState({});
+    const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
         axios.get('http://localhost:5000/users')
@@ -19,16 +21,14 @@ const FavoritesList = () => {
                     acc[user.name] = false;
                     return acc;
                 }, {}));
+                setLoading(false); 
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
+                setLoading(false);
             });
     }, []);
 
-    const handleResetFavorites = () => {
-        toggleFavorite(null);
-        localStorage.removeItem('favorites');
-    };
 
     const toggleMic = (userName) => {
         setMicStates(prevState => ({
@@ -37,11 +37,18 @@ const FavoritesList = () => {
         }));
     };
 
+    const favoriteUsers = users.filter(user => favorites[user.name]);
+
+    if (loading) {
+        return <Loader />; 
+    }
+
     return (
         <div className="Meet">
-            {users
-                .filter(user => favorites[user.name])
-                .map(user => (
+            {favoriteUsers.length === 0 ? (
+                <p style={{color:'white'}}>No favorites added</p>
+            ) : (
+                favoriteUsers.map(user => (
                     <div className="container" key={user.name}>
                         <div className='sound'>
                             <div onClick={() => toggleFavorite(user.name)}>
@@ -66,8 +73,8 @@ const FavoritesList = () => {
                             <p>{user.name}</p>
                         </div>
                     </div>
-                ))}
-            <button onClick={handleResetFavorites}>Reset Favorites</button>
+                ))
+            )}
         </div>
     );
 };

@@ -5,12 +5,13 @@ import { faMicrophone, faMicrophoneSlash } from '@fortawesome/free-solid-svg-ico
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { FavoritesContext } from './Fav';
+import Loader from './Loader'; 
 
 const Teams = () => {
     const { favorites, toggleFavorite } = useContext(FavoritesContext);
     const [users, setUsers] = useState([]);
     const [micStates, setMicStates] = useState({});
-
+    const [loading, setLoading] = useState(true); 
     useEffect(() => {
         axios.get('http://localhost:5000/users')
             .then(response => {
@@ -19,9 +20,11 @@ const Teams = () => {
                     acc[user.name] = false;
                     return acc;
                 }, {}));
+                setLoading(false); 
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
+                setLoading(false);
             });
     }, []);
 
@@ -31,6 +34,10 @@ const Teams = () => {
             [userName]: !prevState[userName]
         }));
     };
+
+    if (loading) {
+        return <Loader />; 
+    }
 
     return (
         <div className="Meet">
@@ -50,7 +57,7 @@ const Teams = () => {
                                 <img src={user.avatar} alt={user.name} className='avatar-img' />
                             ) : (
                                 <div className='avatar-text'>
-                                    {user.name.split(' ')[0][0]} {/* Display the first letter of the first name */}
+                                    {user.name.split(' ')[0][0]} 
                                 </div>
                             )}
                         </div>

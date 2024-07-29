@@ -208,3 +208,11 @@
   margin: 20px 15px 0px 15px;
   font-weight: 400;
 }
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  opacity: 30%;
+  background:transparent;
+}
